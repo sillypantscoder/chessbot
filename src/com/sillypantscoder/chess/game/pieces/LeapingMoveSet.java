@@ -52,9 +52,9 @@ public class LeapingMoveSet extends MoveSet {
 		Set<Move> finalMoves = new HashSet<Move>();
 		for (Cell c : possibleEndingPoints) {
 			c.piece.ifPresentOrElse((v) -> {
-				finalMoves.add(new Move.CaptureMove(movingPiece, c, v));
+				finalMoves.add(new Move.CaptureMove(context, movingPiece, c, v));
 			}, () -> {
-				finalMoves.add(new Move.JumpMove(movingPiece, c));
+				finalMoves.add(new Move.JumpMove(context, movingPiece, c));
 			});
 		}
 		return finalMoves;

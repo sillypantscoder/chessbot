@@ -100,6 +100,16 @@ public class ChessWindow extends Window {
 		// Find cell at this location
 		Cell c = this.board.cells.get(cellX + ", " + cellY);
 		if (c == null) return;
+		// If we have already selected a piece...
+		PieceSelection selection = selectedPiece.orElse(null);
+		if (selection != null) {
+			// AND this is a valid move location...
+			Move m = selection.moves.stream().filter((v) -> v.targetLoc == c).findFirst().orElse(null);
+			if (m != null) {
+				m.execute();
+				return;
+			}
+		}
 		// Get piece at this location
 		Piece p = c.piece.orElse(null);
 		if (p == null) { selectedPiece = Optional.empty(); return; }

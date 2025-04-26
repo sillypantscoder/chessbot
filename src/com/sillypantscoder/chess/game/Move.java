@@ -1,6 +1,7 @@
 package com.sillypantscoder.chess.game;
 
 import java.awt.Color;
+import java.util.Optional;
 
 public abstract class Move {
 	public Piece piece;
@@ -21,9 +22,12 @@ public abstract class Move {
 		return false;
 	}
 	public abstract Color getColor();
+	public abstract void execute();
 	public static class JumpMove extends Move {
-		public JumpMove(Piece piece, Cell targetLoc) {
+		public Cell originalLoc;
+		public JumpMove(Cell originalLoc, Piece piece, Cell targetLoc) {
 			super(piece, targetLoc);
+			this.originalLoc = originalLoc;
 		}
 		public String toString() {
 			return "Jump" + super.toString();
@@ -31,11 +35,17 @@ public abstract class Move {
 		public Color getColor() {
 			return new Color(128, 128, 255);
 		}
+		public void execute() {
+			this.originalLoc.piece = Optional.empty();
+			this.targetLoc.piece = Optional.of(this.piece);
+		}
 	}
 	public static class CaptureMove extends Move {
+		public Cell originalLoc;
 		public Piece capturedPiece;
-		public CaptureMove(Piece piece, Cell targetLoc, Piece capturedPiece) {
+		public CaptureMove(Cell originalLoc, Piece piece, Cell targetLoc, Piece capturedPiece) {
 			super(piece, targetLoc);
+			this.originalLoc = originalLoc;
 			this.capturedPiece = capturedPiece;
 		}
 		public String toString() {
@@ -51,6 +61,10 @@ public abstract class Move {
 		}
 		public Color getColor() {
 			return new Color(255, 128, 128);
+		}
+		public void execute() {
+			this.originalLoc.piece = Optional.empty();
+			this.targetLoc.piece = Optional.of(this.piece);
 		}
 	}
 }

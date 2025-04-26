@@ -29,12 +29,12 @@ public class OrthogonalSlidingMoveSet extends MoveSet {
 			// If we hit a piece, allow capture and exit
 			if (currentCell.piece.isPresent()) {
 				Piece p = currentCell.piece.get();
-				Move capture = new Move.CaptureMove(movingPiece, currentCell, p);
+				Move capture = new Move.CaptureMove(context, movingPiece, currentCell, p);
 				moves.add(capture);
 				break;
 			}
 			// Otherwise, regular move here.
-			Move move = new Move.JumpMove(movingPiece, currentCell);
+			Move move = new Move.JumpMove(context, movingPiece, currentCell);
 			moves.add(move);
 		}
 		// finish
