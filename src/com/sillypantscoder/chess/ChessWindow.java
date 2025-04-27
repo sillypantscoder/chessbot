@@ -21,7 +21,7 @@ public class ChessWindow extends Window {
 	public Optional<PieceSelection> selectedPiece;
 	public double tileSize;
 	public ChessWindow() {
-		this.board = Board.generateStandard2Player8x8();
+		this.board = Board.generateBillionPlayer8x8();
 		this.spritesheet = new Spritesheet("pieces");
 		this.selectedPiece = Optional.empty();
 	}

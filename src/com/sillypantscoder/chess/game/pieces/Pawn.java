@@ -6,10 +6,12 @@ import com.sillypantscoder.chess.game.Team;
 
 public class Pawn extends Piece {
 	public boolean moved;
+	public Direction mainDirection;
 	public Pawn(Direction mainDirection, Team team) {
 		super(team);
 		this.moved = false;
-		this.moveSets.add(new PawnStandardMoveSet(this, mainDirection));
+		this.mainDirection = mainDirection;
+		this.moveSets.add(new PawnStandardMoveSet(this));
 	}
 	public String getName() {
 		return "Pawn";
