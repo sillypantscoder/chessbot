@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.sillypantscoder.chess.game.pieces.Bishop;
 import com.sillypantscoder.chess.game.pieces.King;
@@ -21,8 +22,8 @@ public class Board {
 		this.teams = new Team[0];
 	}
 	public static Board generateStandard2Player8x8() {
-		Team whiteTeam = new Team("White", 0);
-		Team blackTeam = new Team("Black", 1);
+		Team whiteTeam = new Team("White", 0, true);
+		Team blackTeam = new Team("Black", 1, false);
 		// Generate cells
 		SelfAwareMap<Cell> cells = new SelfAwareMap<Cell>();
 		for (int y = 0; y < 8; y++) {
@@ -75,10 +76,9 @@ public class Board {
 		b.cells.putAll(cells);
 		return b;
 	}
-	public static Board generate4Player8x8() {
-		Team whiteTeam = new Team("White", 0);
-		Team aTeam = new Team("A", 1);
-		Team bTeam = new Team("B", 1);
+	public static Board generateLooping2Player8x8() {
+		Team whiteTeam = new Team("White", 0, true);
+		Team blackTeam = new Team("Black", 1, false);
 		// Generate cells
 		SelfAwareMap<Cell> cells = new SelfAwareMap<Cell>();
 		for (int y = 0; y < 8; y++) {
@@ -86,7 +86,7 @@ public class Board {
 				Cell c = new Cell(x + ", " + y, new Direction("up", y < 4));
 				cells.put(c);
 				// Pieces
-				Team team = y < 4 ? (x < 4 ? aTeam : bTeam) : whiteTeam;
+				Team team = y < 4 ? blackTeam : whiteTeam;
 				if (y == 1 || y == 6) c.piece = Optional.of(new Pawn(c.standardForwardsDirection, team));
 				if (y == 0 || y == 7) {
 					Piece p = new Rook(team);
@@ -109,9 +109,17 @@ public class Board {
 					String leftID = (x - 1) + ", " + y;
 					Cell leftCell = cells.get(leftID);
 					cell.connections.put("left", leftCell);
+				} else {
+					String leftID = "7, " + y;
+					Cell leftCell = cells.get(leftID);
+					cell.connections.put("left", leftCell);
 				}
 				if (y > 0) {
 					String upID = x + ", " + (y - 1);
+					Cell upCell = cells.get(upID);
+					cell.connections.put("up", upCell);
+				} else {
+					String upID = x + ", 7";
 					Cell upCell = cells.get(upID);
 					cell.connections.put("up", upCell);
 				}
@@ -127,12 +135,12 @@ public class Board {
 		}
 		// Finish
 		Board b = new Board();
-		b.teams = new Team[] { whiteTeam, aTeam, bTeam };
+		b.teams = new Team[] { whiteTeam, blackTeam };
 		b.cells.putAll(cells);
 		return b;
 	}
 	public static Board generateBillionPlayer8x8() {
-		Team whiteTeam = new Team("White", 0);
+		Team whiteTeam = new Team("White", 0, true);
 		ArrayList<Team> additionalTeams = new ArrayList<Team>();
 		additionalTeams.add(whiteTeam);
 		// Generate cells
@@ -144,7 +152,7 @@ public class Board {
 				// Pieces
 				Team team = y < 4 ? null : whiteTeam;
 				if (team == null) {
-					team = new Team(c.name, 1);
+					team = new Team(c.name, 1, false);
 					additionalTeams.add(team);
 				}
 				if (y == 1 || y == 6) c.piece = Optional.of(new Pawn(c.standardForwardsDirection, team));
@@ -191,6 +199,77 @@ public class Board {
 		b.cells.putAll(cells);
 		return b;
 	}
+	public static Board generateReallyBad() {
+		Team whiteTeam = new Team("White", 0, true);
+		ArrayList<Team> additionalTeams = new ArrayList<Team>();
+		additionalTeams.add(whiteTeam);
+		// Generate cells
+		SelfAwareMap<Cell> cells = new SelfAwareMap<Cell>();
+		for (int y = 0; y < 8; y++) {
+			for (int x = 0; x < 8; x++) {
+				Cell c = new Cell(x + ", " + y, new Direction("up", y < 6));
+				cells.put(c);
+				// Pieces
+				Team team = y < 6 ? null : whiteTeam;
+				if (team == null) {
+					team = new Team(c.name, 1, false);
+					additionalTeams.add(team);
+				}
+				if (y == 6) c.piece = Optional.of(new Pawn(c.standardForwardsDirection, team));
+				if (y == 7) {
+					Piece p = new Rook(team);
+					if (x == 1) p = new Knight(team);
+					if (x == 2) p = new Bishop(team);
+					if (x == 3) p = new Queen(team);
+					if (x == 4) p = new King(team);
+					if (x == 5) p = new Bishop(team);
+					if (x == 6) p = new Knight(team);
+					c.piece = Optional.of(p);
+				}
+				if (y < 6) {
+					double v = Math.random();
+					Piece p = null;
+					if (v < 0.3) p = new Pawn(c.standardForwardsDirection, team);
+					else if (v < 0.5) p = new Knight(team);
+					else if (v < 0.7) p = new Bishop(team);
+					else if (v < 0.85) p = new Rook(team);
+					else if (v < 0.9) p = new Queen(team);
+					else p = new King(team);
+					c.piece = Optional.of(p);
+				}
+			}
+		}
+		// Connections
+		for (int y = 0; y < 8; y++) {
+			for (int x = 0; x < 8; x++) {
+				String id = x + ", " + y;
+				Cell cell = cells.get(id);
+				if (x > 0) {
+					String leftID = (x - 1) + ", " + y;
+					Cell leftCell = cells.get(leftID);
+					cell.connections.put("left", leftCell);
+				}
+				if (y > 0) {
+					String upID = x + ", " + (y - 1);
+					Cell upCell = cells.get(upID);
+					cell.connections.put("up", upCell);
+				}
+			}
+		}
+		// Reverse connections
+		for (int y = 0; y < 8; y++) {
+			for (int x = 0; x < 8; x++) {
+				String id = x + ", " + y;
+				Cell cell = cells.get(id);
+				cell.updateReverseConnections(cells.values());
+			}
+		}
+		// Finish
+		Board b = new Board();
+		b.teams = additionalTeams.toArray(new Team[] { whiteTeam });
+		b.cells.putAll(cells);
+		return b;
+	}
 	public Set<Move> getAllMoves(Team team) {
 		HashSet<Move> moves = new HashSet<Move>();
 		for (Cell c : this.cells.values()) {
@@ -201,5 +280,16 @@ public class Board {
 			});
 		}
 		return moves;
+	}
+	public boolean teamHasAnyPieces(Team team) {
+		AtomicBoolean teamHasAnyPieces = new AtomicBoolean(false);
+		for (Cell c : this.cells.values()) {
+			c.piece.ifPresent((v) -> {
+				if (v.team == team) {
+					teamHasAnyPieces.set(true);
+				}
+			});
+		}
+		return teamHasAnyPieces.get();
 	}
 }

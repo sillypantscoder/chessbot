@@ -43,7 +43,7 @@ public class PawnStandardMoveSet extends MoveSet {
 			Cell diagonal = forwards.go(dir);
 			diagonal.piece.ifPresent((v) -> {
 				if (v.team != movingPiece.team) {
-					moves.add(new Move.CaptureMove(context, movingPiece, diagonal, v));
+					moves.add(new PawnDiagonalMove(context, movingPiece, diagonal, v));
 				}
 			});
 		}
@@ -66,6 +66,24 @@ public class PawnStandardMoveSet extends MoveSet {
 		}
 		public PawnForwardMove duplicate(DuplicatedBoard board) {
 			return new PawnForwardMove(board.getCopy(originalLoc), board.getCopy(piece), board.getCopy(targetLoc));
+		}
+	}
+	public static class PawnDiagonalMove extends Move.CaptureMove {
+		public Pawn piece;
+		public PawnDiagonalMove(Cell originalLoc, Piece piece, Cell targetLoc, Piece capturedPiece) {
+			super(originalLoc, piece, targetLoc, capturedPiece);
+			this.piece = (Pawn)(piece); // dangerous but probably ok
+		}
+		public void execute() {
+			super.execute();
+			this.piece.moved = true;
+			// Check for promotion
+			if (targetLoc.go(piece.mainDirection) == null) {
+				targetLoc.piece = Optional.of(new Queen(piece.team));
+			}
+		}
+		public PawnDiagonalMove duplicate(DuplicatedBoard board) {
+			return new PawnDiagonalMove(board.getCopy(originalLoc), board.getCopy(piece), board.getCopy(targetLoc), board.getCopy(capturedPiece));
 		}
 	}
 }

@@ -16,6 +16,6 @@ public class King extends Piece {
 		return 0;
 	}
 	public int getMaterialValue() {
-		return 4 + 242;
+		return 4;
 	}
 }

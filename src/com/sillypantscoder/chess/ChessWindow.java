@@ -20,10 +20,14 @@ public class ChessWindow extends Window {
 	public Spritesheet spritesheet;
 	public Optional<PieceSelection> selectedPiece;
 	public double tileSize;
+	public int currentTurn;
+	public int animationTime;
 	public ChessWindow() {
-		this.board = Board.generateBillionPlayer8x8();
+		this.board = Board.generateStandard2Player8x8();
 		this.spritesheet = new Spritesheet("pieces");
 		this.selectedPiece = Optional.empty();
+		this.currentTurn = 0;
+		this.animationTime = 0;
 	}
 	public void open() {
 		this.open("Chess", 600, 600);
@@ -84,8 +88,43 @@ public class ChessWindow extends Window {
 				});
 			}
 		}
+		// animation
+		if (animationTime > 0) {
+			animationTime -= 1;
+			if (animationTime == 0) {
+				// continue animation
+				selectedPiece.ifPresentOrElse((v) -> {
+					if (v.moves.size() == 0) {
+						selectedPiece = Optional.empty();
+					}
+				}, () -> {
+					if (this.board.teams[currentTurn].is_player == false) {
+						Team t = this.board.teams[currentTurn];
+						makeBotMove(t);
+						this.currentTurn += 1;
+						animationTime = 10;
+					}
+					if (currentTurn >= this.board.teams.length) {
+						this.currentTurn = 0;
+						purgeTeamList();
+					}
+				});
+			}
+		}
 		// yay
 		return s;
+	}
+	public void purgeTeamList() {
+		for (int i = 0; i < board.teams.length; i++) {
+			if (this.board.teamHasAnyPieces(board.teams[i])) continue;
+			// Remove this team from the list
+			Team[] newTeams = new Team[board.teams.length - 1];
+			System.arraycopy(board.teams, 0, newTeams, 0, i);
+			System.arraycopy(board.teams, i + 1, newTeams, i, board.teams.length - (i + 1));
+			board.teams = newTeams;
+			// Move to the next team
+			i -= 1;
+		}
 	}
 	public void keyDown(String e) {
 	}
@@ -107,10 +146,8 @@ public class ChessWindow extends Window {
 			if (m != null) {
 				m.execute();
 				selectedPiece = Optional.empty();
-				// make bot moves
-				for (Team t : board.teams) { if (t != m.piece.team) {
-					makeBotMove(t);
-				} }
+				currentTurn += 1;
+				animationTime = 10;
 				// don't re-select the piece
 				return;
 			}
@@ -123,8 +160,11 @@ public class ChessWindow extends Window {
 		// Get piece at this location
 		Piece p = c.piece.orElse(null);
 		if (p == null) { selectedPiece = Optional.empty(); return; }
-		// Select the piece
-		selectedPiece = Optional.of(new PieceSelection(c));
+		// Select the piece (if it is ours)
+		if (p.team == this.board.teams[this.currentTurn] && p.team.is_player) {
+			selectedPiece = Optional.of(new PieceSelection(c));
+			animationTime = 10;
+		}
 	}
 	public void mouseUp(int x, int y) {
 	}
