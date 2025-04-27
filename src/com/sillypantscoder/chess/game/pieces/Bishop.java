@@ -14,4 +14,7 @@ public class Bishop extends Piece {
 	public int getIconPos() {
 		return 2;
 	}
+	public int getMaterialValue() {
+		return 3;
+	}
 }

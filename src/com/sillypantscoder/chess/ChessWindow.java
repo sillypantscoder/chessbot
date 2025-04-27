@@ -5,10 +5,12 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
 
+import com.sillypantscoder.chess.bot.ChessBot;
 import com.sillypantscoder.chess.game.Board;
 import com.sillypantscoder.chess.game.Cell;
 import com.sillypantscoder.chess.game.Move;
 import com.sillypantscoder.chess.game.Piece;
+import com.sillypantscoder.chess.game.Team;
 import com.sillypantscoder.utils.Utils;
 import com.sillypantscoder.windowlib.Surface;
 import com.sillypantscoder.windowlib.Window;
@@ -21,14 +23,6 @@ public class ChessWindow extends Window {
 	public ChessWindow() {
 		this.board = Board.generateStandard2Player8x8();
 		this.spritesheet = new Spritesheet("pieces");
-		// this.board.cells.get("1, 1").piece = Optional.of(new Rook());
-		// this.board.cells.get("1, 5").piece = Optional.of(new Knight());
-		// this.board.cells.get("3, 2").piece = Optional.of(new Bishop());
-		// this.board.cells.get("3, 3").piece = Optional.of(new Bishop());
-		// this.board.cells.get("4, 6").piece = Optional.of(new Queen());
-		// this.board.cells.get("7, 7").piece = Optional.of(new King());
-		// this.board.cells.get("7, 6").piece = Optional.of(new Pawn(this.board.cells.get("7, 6").standardForwardsDirection));
-		// this.board.cells.get("0, 2").piece = Optional.of(new Pawn(this.board.cells.get("0, 2").standardForwardsDirection));
 		this.selectedPiece = Optional.empty();
 	}
 	public void open() {
@@ -113,6 +107,11 @@ public class ChessWindow extends Window {
 			if (m != null) {
 				m.execute();
 				selectedPiece = Optional.empty();
+				// make bot moves
+				for (Team t : board.teams) { if (t != m.piece.team) {
+					makeBotMove(t);
+				} }
+				// don't re-select the piece
 				return;
 			}
 			// Or maybe we clicked on the selected piece.
@@ -130,6 +129,11 @@ public class ChessWindow extends Window {
 	public void mouseUp(int x, int y) {
 	}
 	public void mouseWheel(int amount) {
+	}
+	public void makeBotMove(Team team) {
+		Move bestMove = ChessBot.getBestMove(board, team);
+		if (bestMove == null) return;
+		bestMove.execute();
 	}
 	public static class PieceSelection {
 		public Piece piece;

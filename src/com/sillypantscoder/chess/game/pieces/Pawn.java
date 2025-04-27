@@ -17,4 +17,7 @@ public class Pawn extends Piece {
 	public int getIconPos() {
 		return 5;
 	}
+	public int getMaterialValue() {
+		return 1;
+	}
 }

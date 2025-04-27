@@ -31,4 +31,5 @@ public abstract class Piece {
 		}
 		return moves;
 	}
+	public abstract int getMaterialValue();
 }

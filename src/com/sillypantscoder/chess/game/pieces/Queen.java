@@ -15,4 +15,7 @@ public class Queen extends Piece {
 	public int getIconPos() {
 		return 1;
 	}
+	public int getMaterialValue() {
+		return 9;
+	}
 }

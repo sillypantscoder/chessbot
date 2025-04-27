@@ -1,6 +1,8 @@
 package com.sillypantscoder.chess.game;
 
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 
 import com.sillypantscoder.chess.game.pieces.Bishop;
 import com.sillypantscoder.chess.game.pieces.King;
@@ -71,5 +73,16 @@ public class Board {
 		b.teams = new Team[] { whiteTeam, blackTeam };
 		b.cells.putAll(cells);
 		return b;
+	}
+	public Set<Move> getAllMoves(Team team) {
+		HashSet<Move> moves = new HashSet<Move>();
+		for (Cell c : this.cells.values()) {
+			c.piece.ifPresent((v) -> {
+				if (v.team == team) {
+					moves.addAll(v.getAllMoves(c));
+				}
+			});
+		}
+		return moves;
 	}
 }

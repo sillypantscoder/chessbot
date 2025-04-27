@@ -14,4 +14,7 @@ public class Rook extends Piece {
 	public int getIconPos() {
 		return 4;
 	}
+	public int getMaterialValue() {
+		return 5;
+	}
 }

@@ -14,4 +14,7 @@ public class Knight extends Piece {
 	public int getIconPos() {
 		return 3;
 	}
+	public int getMaterialValue() {
+		return 3;
+	}
 }

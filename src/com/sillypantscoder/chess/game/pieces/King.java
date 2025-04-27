@@ -15,4 +15,7 @@ public class King extends Piece {
 	public int getIconPos() {
 		return 0;
 	}
+	public int getMaterialValue() {
+		return 4;
+	}
 }

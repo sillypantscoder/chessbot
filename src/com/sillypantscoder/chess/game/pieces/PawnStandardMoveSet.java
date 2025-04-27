@@ -5,6 +5,7 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.sillypantscoder.chess.bot.DuplicatedBoard;
 import com.sillypantscoder.chess.game.Cell;
 import com.sillypantscoder.chess.game.Direction;
 import com.sillypantscoder.chess.game.Move;
@@ -54,11 +55,14 @@ public class PawnStandardMoveSet extends MoveSet {
 		public Pawn piece;
 		public PawnForwardMove(Cell originalLoc, Piece piece, Cell targetLoc) {
 			super(originalLoc, piece, targetLoc);
-			this.piece = (Pawn)(piece);
+			this.piece = (Pawn)(piece); // dangerous but probably ok
 		}
 		public void execute() {
 			super.execute();
 			this.piece.moved = true;
+		}
+		public PawnForwardMove duplicate(DuplicatedBoard board) {
+			return new PawnForwardMove(board.getCopy(originalLoc), board.getCopy(piece), board.getCopy(targetLoc));
 		}
 	}
 }

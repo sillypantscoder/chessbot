@@ -3,6 +3,8 @@ package com.sillypantscoder.chess.game;
 import java.awt.Color;
 import java.util.Optional;
 
+import com.sillypantscoder.chess.bot.DuplicatedBoard;
+
 public abstract class Move {
 	public Piece piece;
 	public Cell targetLoc;
@@ -23,6 +25,7 @@ public abstract class Move {
 	}
 	public abstract Color getColor();
 	public abstract void execute();
+	public abstract Move duplicate(DuplicatedBoard board);
 	public static class JumpMove extends Move {
 		public Cell originalLoc;
 		public JumpMove(Cell originalLoc, Piece piece, Cell targetLoc) {
@@ -38,6 +41,9 @@ public abstract class Move {
 		public void execute() {
 			this.originalLoc.piece = Optional.empty();
 			this.targetLoc.piece = Optional.of(this.piece);
+		}
+		public JumpMove duplicate(DuplicatedBoard board) {
+			return new JumpMove(board.getCopy(originalLoc), board.getCopy(piece), board.getCopy(targetLoc));
 		}
 	}
 	public static class CaptureMove extends Move {
@@ -65,6 +71,9 @@ public abstract class Move {
 		public void execute() {
 			this.originalLoc.piece = Optional.empty();
 			this.targetLoc.piece = Optional.of(this.piece);
+		}
+		public CaptureMove duplicate(DuplicatedBoard board) {
+			return new CaptureMove(board.getCopy(originalLoc), board.getCopy(piece), board.getCopy(targetLoc), board.getCopy(capturedPiece));
 		}
 	}
 }
