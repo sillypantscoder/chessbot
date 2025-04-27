@@ -46,4 +46,19 @@ public class Cell implements SelfAwareMap.MapItem {
 		}
 		return targetCell;
 	}
+	public Cell go_diagonal(String direction1, boolean reversed1, String direction2, boolean reversed2) {
+		// Direction 1 first...
+		Cell loc1 = this.go(direction1, reversed1);
+		if (loc1 == null) return null;
+		loc1 = loc1.go(direction2, reversed2);
+		if (loc1 == null) return null;
+		// Direction 2 first...
+		Cell loc2 = this.go(direction2, reversed2);
+		if (loc2 == null) return null;
+		loc2 = loc2.go(direction1, reversed1);
+		if (loc2 == null) return null;
+		// Make sure they are the same
+		if (loc1 != loc2) return null;
+		else return loc1;
+	}
 }

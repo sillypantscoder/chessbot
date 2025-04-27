@@ -9,6 +9,7 @@ import com.sillypantscoder.chess.game.Board;
 import com.sillypantscoder.chess.game.Cell;
 import com.sillypantscoder.chess.game.Move;
 import com.sillypantscoder.chess.game.Piece;
+import com.sillypantscoder.chess.game.pieces.Bishop;
 import com.sillypantscoder.chess.game.pieces.Knight;
 import com.sillypantscoder.chess.game.pieces.Rook;
 import com.sillypantscoder.utils.Utils;
@@ -25,6 +26,8 @@ public class ChessWindow extends Window {
 		this.spritesheet = new Spritesheet("pieces2");
 		this.board.cells.get("1, 1").piece = Optional.of(new Rook());
 		this.board.cells.get("1, 5").piece = Optional.of(new Knight());
+		this.board.cells.get("3, 2").piece = Optional.of(new Bishop());
+		this.board.cells.get("3, 3").piece = Optional.of(new Bishop());
 		this.selectedPiece = Optional.empty();
 	}
 	public void open() {
@@ -107,6 +110,7 @@ public class ChessWindow extends Window {
 			Move m = selection.moves.stream().filter((v) -> v.targetLoc == c).findFirst().orElse(null);
 			if (m != null) {
 				m.execute();
+				selectedPiece = Optional.empty();
 				return;
 			}
 		}
