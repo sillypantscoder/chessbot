@@ -42,7 +42,9 @@ public class PawnStandardMoveSet extends MoveSet {
 			if (dir.equals(this.main_direction) || dir.equals(this.main_direction.reverseDirection())) continue;
 			Cell diagonal = forwards.go(dir);
 			diagonal.piece.ifPresent((v) -> {
-				moves.add(new Move.CaptureMove(context, movingPiece, diagonal, v));
+				if (v.team != movingPiece.team) {
+					moves.add(new Move.CaptureMove(context, movingPiece, diagonal, v));
+				}
 			});
 		}
 		// finish

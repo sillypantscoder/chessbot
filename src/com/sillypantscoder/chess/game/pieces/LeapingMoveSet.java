@@ -33,6 +33,7 @@ public class LeapingMoveSet extends MoveSet {
 			Set<Direction> possibleDirections = line.endCell.getDirections()		.stream().collect(Collectors.toSet());
 			// We can't go in the same direction twice
 			possibleDirections.remove(line.directionMoved);
+			possibleDirections.remove(line.directionMoved.reverseDirection());
 			// Go in all possible directions
 			for (Direction dir : possibleDirections) {
 				Cell endpointCell = line.endCell.go(dir);
@@ -44,7 +45,7 @@ public class LeapingMoveSet extends MoveSet {
 		Set<Move> finalMoves = new HashSet<Move>();
 		for (Cell c : possibleEndingPoints) {
 			c.piece.ifPresentOrElse((v) -> {
-				finalMoves.add(new Move.CaptureMove(context, movingPiece, c, v));
+				if (v.team != movingPiece.team) finalMoves.add(new Move.CaptureMove(context, movingPiece, c, v));
 			}, () -> {
 				finalMoves.add(new Move.JumpMove(context, movingPiece, c));
 			});
