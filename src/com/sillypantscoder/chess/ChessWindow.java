@@ -12,6 +12,7 @@ import com.sillypantscoder.chess.game.Piece;
 import com.sillypantscoder.chess.game.pieces.Bishop;
 import com.sillypantscoder.chess.game.pieces.King;
 import com.sillypantscoder.chess.game.pieces.Knight;
+import com.sillypantscoder.chess.game.pieces.Pawn;
 import com.sillypantscoder.chess.game.pieces.Queen;
 import com.sillypantscoder.chess.game.pieces.Rook;
 import com.sillypantscoder.utils.Utils;
@@ -32,6 +33,8 @@ public class ChessWindow extends Window {
 		this.board.cells.get("3, 3").piece = Optional.of(new Bishop());
 		this.board.cells.get("4, 6").piece = Optional.of(new Queen());
 		this.board.cells.get("7, 7").piece = Optional.of(new King());
+		this.board.cells.get("7, 6").piece = Optional.of(new Pawn("up", false));
+		this.board.cells.get("0, 2").piece = Optional.of(new Pawn("left", true));
 		this.selectedPiece = Optional.empty();
 	}
 	public void open() {
