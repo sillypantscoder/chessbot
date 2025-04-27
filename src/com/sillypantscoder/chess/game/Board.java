@@ -14,7 +14,7 @@ public class Board {
 		// Create cells
 		for (int y = 0; y < 8; y++) {
 			for (int x = 0; x < 8; x++) {
-				Cell c = new Cell(x + ", " + y);
+				Cell c = new Cell(x + ", " + y, new Direction("up", y < 4));
 				cells.put(c);
 			}
 		}

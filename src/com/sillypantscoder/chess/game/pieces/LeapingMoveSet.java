@@ -7,6 +7,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.sillypantscoder.chess.game.Cell;
+import com.sillypantscoder.chess.game.Direction;
 import com.sillypantscoder.chess.game.Move;
 import com.sillypantscoder.chess.game.MoveSet;
 import com.sillypantscoder.chess.game.Piece;
@@ -21,29 +22,20 @@ public class LeapingMoveSet extends MoveSet {
 	public Set<Move> getMoves(Cell context) {
 		// Move in every possible direction by `offsetX`
 		ArrayList<CellLine> possibleMovements = new ArrayList<CellLine>();
-		for (String dir : context.connections.keySet()) {
-			possibleMovements.add(new CellLine(context.go(dir, this.offsetX), dir, false));
-		}
-		for (String dir : context.reverseConnections.keySet()) {
-			possibleMovements.add(new CellLine(context.go(dir, -this.offsetX), dir, true));
+		for (Direction dir : context.getDirections()) {
+			possibleMovements.add(new CellLine(context.go(dir, this.offsetX), dir));
 		}
 		// Then move in every remaining direction by `offsetY`
 		Set<Cell> possibleEndingPoints = new HashSet<Cell>();
 		for (CellLine line : possibleMovements) {
-			if (line.endCell == null) continue;
-			// Find all the directions we can go in from here									(Copy the arrays so that removing keys is ok)
-			Set<String> possibleForwardDirections = line.endCell.connections.keySet()			.stream().collect(Collectors.toSet());
-			Set<String> possibleBackwardDirections = line.endCell.reverseConnections.keySet()	.stream().collect(Collectors.toSet());
+			if (line.endCell == null) continue; // no idea how this happened
+			// Find all the directions we can go in from here						(Copy the arrays so that removing keys is ok)
+			Set<Direction> possibleDirections = line.endCell.getDirections()		.stream().collect(Collectors.toSet());
 			// We can't go in the same direction twice
-			possibleForwardDirections.remove(line.directionMoved);
-			possibleBackwardDirections.remove(line.directionMoved);
+			possibleDirections.remove(line.directionMoved);
 			// Go in all possible directions
-			for (String dir : possibleForwardDirections) {
-				Cell endpointCell = line.endCell.go(dir, false);
-				possibleEndingPoints.add(endpointCell);
-			}
-			for (String dir : possibleBackwardDirections) {
-				Cell endpointCell = line.endCell.go(dir, true);
+			for (Direction dir : possibleDirections) {
+				Cell endpointCell = line.endCell.go(dir);
 				possibleEndingPoints.add(endpointCell);
 			}
 		}
@@ -64,13 +56,10 @@ public class LeapingMoveSet extends MoveSet {
 	 */
 	private static class CellLine {
 		public Cell endCell; // The cell that this line ends at
-		public String directionMoved; // The direction this line goes in
-		@SuppressWarnings("unused")
-		public boolean reverse; // Whether we went in reverse
-		public CellLine(Cell endCell, String directionMoved, boolean reverse) {
+		public Direction directionMoved; // The direction this line goes in
+		public CellLine(Cell endCell, Direction directionMoved) {
 			this.endCell = endCell;
 			this.directionMoved = directionMoved;
-			this.reverse = reverse;
 		}
 	}
 }

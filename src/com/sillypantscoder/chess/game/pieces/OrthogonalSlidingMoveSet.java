@@ -5,6 +5,7 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 
 import com.sillypantscoder.chess.game.Cell;
+import com.sillypantscoder.chess.game.Direction;
 import com.sillypantscoder.chess.game.Move;
 import com.sillypantscoder.chess.game.MoveSet;
 import com.sillypantscoder.chess.game.Piece;
@@ -17,13 +18,13 @@ public class OrthogonalSlidingMoveSet extends MoveSet {
 	public OrthogonalSlidingMoveSet() {
 		this.max_length = -1;
 	}
-	public Set<Move> getMoves(Piece movingPiece, Cell context, String direction, boolean reversed) {
+	public Set<Move> getMoves(Piece movingPiece, Cell context, Direction direction) {
 		Set<Move> moves = new HashSet<Move>();
 		// Go until we reach a piece or the maximum allowed length
 		Cell currentCell = context;
 		int max_length = this.max_length == -1 ? 1000 : this.max_length;
 		for (int i = 1; i <= max_length; i++) {
-			currentCell = currentCell.go(direction, reversed);
+			currentCell = currentCell.go(direction);
 			// If we run out of board, exit
 			if (currentCell == null) break;
 			// If we hit a piece, allow capture and exit
@@ -45,13 +46,9 @@ public class OrthogonalSlidingMoveSet extends MoveSet {
 		// Get the moving piece
 		Piece movingPiece = context.piece.orElseThrow(() -> new NoSuchElementException("There needs to be a piece at the location defined by `context` (required in order to construct a Move object)"));
 		// Find all allowed directions
-		Set<String> forwardDirections = context.connections.keySet();
-		for (String dir : forwardDirections) {
-			moves.addAll(getMoves(movingPiece, context, dir, false));
-		}
-		Set<String> backwardDirections = context.connections.keySet();
-		for (String dir : backwardDirections) {
-			moves.addAll(getMoves(movingPiece, context, dir, true));
+		Set<Direction> directions = context.getDirections();
+		for (Direction dir : directions) {
+			moves.addAll(getMoves(movingPiece, context, dir));
 		}
 		// finish
 		return moves;
