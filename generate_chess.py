@@ -20,7 +20,7 @@ f.close()
 
 img = pygame.image.load(dataBuffer, "Chess_Pieces_Sprite3.svg")
 
-pygame.image.save(img, "src/resources/pieces2.png")
+pygame.image.save(img, "src/resources/pieces.png")
 
 
 

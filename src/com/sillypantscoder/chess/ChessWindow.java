@@ -9,12 +9,6 @@ import com.sillypantscoder.chess.game.Board;
 import com.sillypantscoder.chess.game.Cell;
 import com.sillypantscoder.chess.game.Move;
 import com.sillypantscoder.chess.game.Piece;
-import com.sillypantscoder.chess.game.pieces.Bishop;
-import com.sillypantscoder.chess.game.pieces.King;
-import com.sillypantscoder.chess.game.pieces.Knight;
-import com.sillypantscoder.chess.game.pieces.Pawn;
-import com.sillypantscoder.chess.game.pieces.Queen;
-import com.sillypantscoder.chess.game.pieces.Rook;
 import com.sillypantscoder.utils.Utils;
 import com.sillypantscoder.windowlib.Surface;
 import com.sillypantscoder.windowlib.Window;
@@ -25,20 +19,16 @@ public class ChessWindow extends Window {
 	public Optional<PieceSelection> selectedPiece;
 	public double tileSize;
 	public ChessWindow() {
-		this.board = new Board();
-		this.spritesheet = new Spritesheet("pieces2");
-		this.board.cells.get("1, 1").piece = Optional.of(new Rook());
-		this.board.cells.get("1, 5").piece = Optional.of(new Knight());
-		this.board.cells.get("3, 2").piece = Optional.of(new Bishop());
-		this.board.cells.get("3, 3").piece = Optional.of(new Bishop());
-		this.board.cells.get("4, 6").piece = Optional.of(new Queen());
-		this.board.cells.get("7, 7").piece = Optional.of(new King());
-		this.board.cells.get("7, 6").piece = Optional.of(new Pawn(this.board.cells.get("7, 6").standardForwardsDirection));
-		this.board.cells.get("0, 2").piece = Optional.of(new Pawn(this.board.cells.get("0, 2").standardForwardsDirection));
-		// for (int i = 0; i < 8; i++) {
-		// 	Cell c = this.board.cells.get(i + ", " + i);
-		// 	c.piece = Optional.of(new Pawn(c.standardForwardsDirection));
-		// }
+		this.board = Board.generateStandard2Player8x8();
+		this.spritesheet = new Spritesheet("pieces");
+		// this.board.cells.get("1, 1").piece = Optional.of(new Rook());
+		// this.board.cells.get("1, 5").piece = Optional.of(new Knight());
+		// this.board.cells.get("3, 2").piece = Optional.of(new Bishop());
+		// this.board.cells.get("3, 3").piece = Optional.of(new Bishop());
+		// this.board.cells.get("4, 6").piece = Optional.of(new Queen());
+		// this.board.cells.get("7, 7").piece = Optional.of(new King());
+		// this.board.cells.get("7, 6").piece = Optional.of(new Pawn(this.board.cells.get("7, 6").standardForwardsDirection));
+		// this.board.cells.get("0, 2").piece = Optional.of(new Pawn(this.board.cells.get("0, 2").standardForwardsDirection));
 		this.selectedPiece = Optional.empty();
 	}
 	public void open() {

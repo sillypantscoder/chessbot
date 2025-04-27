@@ -8,18 +8,21 @@ import com.sillypantscoder.chess.Spritesheet;
 import com.sillypantscoder.windowlib.Surface;
 
 public abstract class Piece {
+	public Team team;
 	public ArrayList<MoveSet> moveSets;
-	public Piece() {
+	public Piece(Team team) {
+		this.team = team;
 		this.moveSets = new ArrayList<MoveSet>();
 	}
 	public abstract String getName();
-	public abstract int[] getIconPos();
+	public abstract int getIconPos();
 	public String toString() {
-		return "Piece { " + this.getName() + " }";
+		return "Piece { " + this.getName() + ", team: " + team.name + " }";
 	}
 	public Surface getIcon(Spritesheet sheet) {
-		int[] pos = getIconPos();
-		return sheet.getImage(pos[0], pos[1]);
+		return sheet.getImage(
+			getIconPos(), this.team.spritesheet_index
+		);
 	}
 	public Set<Move> getAllMoves(Cell context) {
 		Set<Move> moves = new HashSet<Move>();

@@ -1,16 +1,17 @@
 package com.sillypantscoder.chess.game.pieces;
 
 import com.sillypantscoder.chess.game.Piece;
+import com.sillypantscoder.chess.game.Team;
 
 public class Bishop extends Piece {
-	public Bishop() {
-		super();
+	public Bishop(Team team) {
+		super(team);
 		this.moveSets.add(new DiagonalSlidingMoveSet());
 	}
 	public String getName() {
 		return "Bishop";
 	}
-	public int[] getIconPos() {
-		return new int[] { 2, 0 };
+	public int getIconPos() {
+		return 2;
 	}
 }
