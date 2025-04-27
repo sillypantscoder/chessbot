@@ -49,6 +49,7 @@ public class ChessWindow extends Window {
 				// draw tile
 				Color tileColor = new Color(255-32, 255-32, 255-32);
 				if ((x + y) % 2 == 0) tileColor = Color.WHITE;
+				if (c.highlighted) tileColor = Color.YELLOW;
 				s.drawRect(tileColor, drawX, drawY, intTileSize, intTileSize);
 				// selected piece?
 				selectedPiece.ifPresent((p) -> {
@@ -144,6 +145,7 @@ public class ChessWindow extends Window {
 			// AND this is a valid move location...
 			Move m = selection.moves.stream().filter((v) -> v.targetLoc == c).findFirst().orElse(null);
 			if (m != null) {
+				clearHighlights();
 				m.execute();
 				selectedPiece = Optional.empty();
 				currentTurn += 1;
@@ -171,9 +173,15 @@ public class ChessWindow extends Window {
 	public void mouseWheel(int amount) {
 	}
 	public void makeBotMove(Team team) {
+		clearHighlights();
 		Move bestMove = ChessBot.getBestMove(board, team);
 		if (bestMove == null) return;
 		bestMove.execute();
+	}
+	public void clearHighlights() {
+		for (Cell c : this.board.cells.values()) {
+			c.highlighted = false;
+		}
 	}
 	public static class PieceSelection {
 		public Piece piece;

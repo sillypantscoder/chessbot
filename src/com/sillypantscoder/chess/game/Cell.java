@@ -14,12 +14,14 @@ public class Cell implements SelfAwareMap.MapItem {
 	public HashMap<String, Cell> reverseConnections;
 	public Optional<Piece> piece;
 	public Direction standardForwardsDirection;
+	public boolean highlighted;
 	public Cell(String name, Direction standardForwardsDirection) {
 		this.name = name;
 		this.connections = new HashMap<String, Cell>();
 		this.reverseConnections = new HashMap<String, Cell>();
 		this.piece = Optional.empty();
 		this.standardForwardsDirection = standardForwardsDirection;
+		this.highlighted = false;
 	}
 	public String getName() {
 		return name;

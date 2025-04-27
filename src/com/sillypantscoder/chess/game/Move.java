@@ -41,6 +41,8 @@ public abstract class Move {
 		public void execute() {
 			this.originalLoc.piece = Optional.empty();
 			this.targetLoc.piece = Optional.of(this.piece);
+			this.originalLoc.highlighted = true;
+			this.targetLoc.highlighted = true;
 		}
 		public JumpMove duplicate(DuplicatedBoard board) {
 			return new JumpMove(board.getCopy(originalLoc), board.getCopy(piece), board.getCopy(targetLoc));
@@ -71,6 +73,8 @@ public abstract class Move {
 		public void execute() {
 			this.originalLoc.piece = Optional.empty();
 			this.targetLoc.piece = Optional.of(this.piece);
+			this.originalLoc.highlighted = true;
+			this.targetLoc.highlighted = true;
 		}
 		public CaptureMove duplicate(DuplicatedBoard board) {
 			return new CaptureMove(board.getCopy(originalLoc), board.getCopy(piece), board.getCopy(targetLoc), board.getCopy(capturedPiece));
