@@ -10,7 +10,9 @@ import com.sillypantscoder.chess.game.Cell;
 import com.sillypantscoder.chess.game.Move;
 import com.sillypantscoder.chess.game.Piece;
 import com.sillypantscoder.chess.game.pieces.Bishop;
+import com.sillypantscoder.chess.game.pieces.King;
 import com.sillypantscoder.chess.game.pieces.Knight;
+import com.sillypantscoder.chess.game.pieces.Queen;
 import com.sillypantscoder.chess.game.pieces.Rook;
 import com.sillypantscoder.utils.Utils;
 import com.sillypantscoder.windowlib.Surface;
@@ -20,7 +22,7 @@ public class ChessWindow extends Window {
 	public Board board;
 	public Spritesheet spritesheet;
 	public Optional<PieceSelection> selectedPiece;
-	public int tileSize;
+	public double tileSize;
 	public ChessWindow() {
 		this.board = new Board();
 		this.spritesheet = new Spritesheet("pieces2");
@@ -28,10 +30,12 @@ public class ChessWindow extends Window {
 		this.board.cells.get("1, 5").piece = Optional.of(new Knight());
 		this.board.cells.get("3, 2").piece = Optional.of(new Bishop());
 		this.board.cells.get("3, 3").piece = Optional.of(new Bishop());
+		this.board.cells.get("4, 6").piece = Optional.of(new Queen());
+		this.board.cells.get("7, 7").piece = Optional.of(new King());
 		this.selectedPiece = Optional.empty();
 	}
 	public void open() {
-		this.open("Chess", 500, 500);
+		this.open("Chess", 600, 600);
 	}
 	public Surface getIcon() {
 		return this.spritesheet.getImage(5, 0);
@@ -39,22 +43,23 @@ public class ChessWindow extends Window {
 	public Surface frame(int width, int height) {
 		Surface s = new Surface(width, height, new Color(255-64, 255-64, 255-64));
 		// draw pieces
-		tileSize = Math.floorDiv(Math.min(width, height), 8);
+		tileSize = Math.min(width, height) / 8d;
 		for (int x = 0; x < 8; x++) {
 			for (int y = 0; y < 8; y++) {
 				Cell c = this.board.cells.get(x + ", " + y);
 				if (c == null) continue;
-				final int drawX = x * tileSize;
-				final int drawY = y * tileSize;
+				final int drawX = (int)(x * tileSize);
+				final int drawY = (int)(y * tileSize);
+				final int intTileSize = (int)(Math.ceil(tileSize));
 				// draw tile
 				Color tileColor = new Color(255-32, 255-32, 255-32);
 				if ((x + y) % 2 == 0) tileColor = Color.WHITE;
-				s.drawRect(tileColor, drawX, drawY, tileSize, tileSize);
+				s.drawRect(tileColor, drawX, drawY, intTileSize, intTileSize);
 				// selected piece?
 				selectedPiece.ifPresent((p) -> {
-					if (Utils.bothSameValue(p, c.piece)) {
+					if (Utils.bothSameValue(p.piece, c.piece)) {
 						// Highlight the selected piece
-						s.drawRect(new Color(128, 128, 255), drawX, drawY, tileSize, tileSize);
+						s.drawRect(new Color(128, 128, 255), drawX, drawY, intTileSize, intTileSize);
 					}
 				});
 				// check for piece
@@ -62,12 +67,12 @@ public class ChessWindow extends Window {
 					// Selected piece?
 					selectedPiece.ifPresent((p) -> {
 						if (p.piece == v) {
-							s.drawRect(new Color(128, 128, 255), drawX, drawY, tileSize, tileSize);
+							s.drawRect(new Color(128, 128, 255), drawX, drawY, intTileSize, intTileSize);
 						}
 					});
 					// Draw icon
 					Surface icon = v.getIcon(spritesheet);
-					icon = icon.resize(tileSize, tileSize);
+					icon = icon.resize(intTileSize, intTileSize);
 					s.blit(icon, drawX, drawY);
 				});
 			}
@@ -76,8 +81,8 @@ public class ChessWindow extends Window {
 			for (int y = 0; y < 8; y++) {
 				Cell c = this.board.cells.get(x + ", " + y);
 				if (c == null) continue;
-				final int drawX = x * tileSize;
-				final int drawY = y * tileSize;
+				final int drawX = (int)(x * tileSize);
+				final int drawY = (int)(y * tileSize);
 				// selected piece?
 				selectedPiece.ifPresent((p) -> {
 					Move m = p.moves.stream().filter((v) -> v.targetLoc == c).findFirst().orElse(null);
@@ -98,8 +103,8 @@ public class ChessWindow extends Window {
 	public void mouseMoved(int x, int y) {
 	}
 	public void mouseDown(int x, int y) {
-		int cellX = Math.floorDiv(x, tileSize);
-		int cellY = Math.floorDiv(y, tileSize);
+		int cellX = (int)(Math.floor(x / tileSize));
+		int cellY = (int)(Math.floor(y / tileSize));
 		// Find cell at this location
 		Cell c = this.board.cells.get(cellX + ", " + cellY);
 		if (c == null) return;
@@ -110,6 +115,11 @@ public class ChessWindow extends Window {
 			Move m = selection.moves.stream().filter((v) -> v.targetLoc == c).findFirst().orElse(null);
 			if (m != null) {
 				m.execute();
+				selectedPiece = Optional.empty();
+				return;
+			}
+			// Or maybe we clicked on the selected piece.
+			if (Utils.bothSameValue(selection.piece, c.piece)) {
 				selectedPiece = Optional.empty();
 				return;
 			}

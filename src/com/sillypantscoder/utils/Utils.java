@@ -7,7 +7,7 @@ public class Utils {
 	/**
 	 * Return whether both values are present and equal.
 	 */
-	public static boolean bothSameValue(Optional<?> a, Optional<?> b) {
+	public static<T> boolean bothSameValue(Optional<T> a, Optional<T> b) {
 		AtomicBoolean ret = new AtomicBoolean(false);
 		a.ifPresent((av) -> {
 			b.ifPresent((bv) -> {
@@ -18,7 +18,7 @@ public class Utils {
 		});
 		return ret.get();
 	}
-	public static boolean bothSameValue(Object a, Optional<?> b) {
+	public static<T> boolean bothSameValue(T a, Optional<T> b) {
 		AtomicBoolean ret = new AtomicBoolean(false);
 		b.ifPresent((bv) -> {
 			if (a.equals(bv)) {
