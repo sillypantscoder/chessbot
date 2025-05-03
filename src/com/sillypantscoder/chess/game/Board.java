@@ -76,7 +76,126 @@ public class Board {
 		b.cells.putAll(cells);
 		return b;
 	}
+	public static Board generateDoubleSized() {
+		Team whiteTeam = new Team("White", 0, true);
+		Team blackTeam = new Team("Black", 1, false);
+		// Generate cells
+		SelfAwareMap<Cell> cells = new SelfAwareMap<Cell>();
+		for (int y = 0; y < 16; y++) {
+			for (int x = 0; x < 16; x++) {
+				Cell c = new Cell(x + ", " + y, new Direction("up", y < 8));
+				cells.put(c);
+				// Pieces
+				if (x < 4 || x >= 12) continue;
+				Team team = y < 8 ? blackTeam : whiteTeam;
+				if (y == 1 || y == 14) c.piece = Optional.of(new Pawn(c.standardForwardsDirection, team));
+				if (y == 0 || y == 15) {
+					Piece p = new Rook(team);
+					if (x-4 == 1) p = new Knight(team);
+					if (x-4 == 2) p = new Bishop(team);
+					if (x-4 == 3) p = new Queen(team);
+					if (x-4 == 4) p = new King(team);
+					if (x-4 == 5) p = new Bishop(team);
+					if (x-4 == 6) p = new Knight(team);
+					c.piece = Optional.of(p);
+				}
+			}
+		}
+		// Connections
+		for (int y = 0; y < 16; y++) {
+			for (int x = 0; x < 16; x++) {
+				String id = x + ", " + y;
+				Cell cell = cells.get(id);
+				if (x > 0) {
+					String leftID = (x - 1) + ", " + y;
+					Cell leftCell = cells.get(leftID);
+					cell.connections.put("left", leftCell);
+				}
+				if (y > 0) {
+					String upID = x + ", " + (y - 1);
+					Cell upCell = cells.get(upID);
+					cell.connections.put("up", upCell);
+				}
+			}
+		}
+		// Reverse connections
+		for (int y = 0; y < 16; y++) {
+			for (int x = 0; x < 16; x++) {
+				String id = x + ", " + y;
+				Cell cell = cells.get(id);
+				cell.updateReverseConnections(cells.values());
+			}
+		}
+		// Finish
+		Board b = new Board();
+		b.teams = new Team[] { whiteTeam, blackTeam };
+		b.cells.putAll(cells);
+		return b;
+	}
 	public static Board generateLooping2Player8x8() {
+		Team whiteTeam = new Team("White", 0, true);
+		Team blackTeam = new Team("Black", 1, false);
+		// Generate cells
+		SelfAwareMap<Cell> cells = new SelfAwareMap<Cell>();
+		for (int y = 0; y < 8; y++) {
+			for (int x = 0; x < 8; x++) {
+				Cell c = new Cell(x + ", " + y, new Direction("up", y < 4));
+				cells.put(c);
+				// Pieces
+				Team team = y < 4 ? blackTeam : whiteTeam;
+				if (y == 2 || y == 5) c.piece = Optional.of(new Pawn(c.standardForwardsDirection, team));
+				if (y == 1 || y == 6) {
+					Piece p = new Rook(team);
+					if (x == 1) p = new Knight(team);
+					if (x == 2) p = new Bishop(team);
+					if (x == 3) p = new Queen(team);
+					if (x == 4) p = new King(team);
+					if (x == 5) p = new Bishop(team);
+					if (x == 6) p = new Knight(team);
+					c.piece = Optional.of(p);
+				}
+			}
+		}
+		// Connections
+		for (int y = 0; y < 8; y++) {
+			for (int x = 0; x < 8; x++) {
+				String id = x + ", " + y;
+				Cell cell = cells.get(id);
+				if (x > 0) {
+					String leftID = (x - 1) + ", " + y;
+					Cell leftCell = cells.get(leftID);
+					cell.connections.put("left", leftCell);
+				} else {
+					String leftID = "7, " + y;
+					Cell leftCell = cells.get(leftID);
+					cell.connections.put("left", leftCell);
+				}
+				if (y > 0) {
+					String upID = x + ", " + (y - 1);
+					Cell upCell = cells.get(upID);
+					cell.connections.put("up", upCell);
+				} else {
+					String upID = x + ", 7";
+					Cell upCell = cells.get(upID);
+					cell.connections.put("up", upCell);
+				}
+			}
+		}
+		// Reverse connections
+		for (int y = 0; y < 8; y++) {
+			for (int x = 0; x < 8; x++) {
+				String id = x + ", " + y;
+				Cell cell = cells.get(id);
+				cell.updateReverseConnections(cells.values());
+			}
+		}
+		// Finish
+		Board b = new Board();
+		b.teams = new Team[] { whiteTeam, blackTeam };
+		b.cells.putAll(cells);
+		return b;
+	}
+	public static Board generateHorizontallyLooping2Player8x8() {
 		Team whiteTeam = new Team("White", 0, true);
 		Team blackTeam = new Team("Black", 1, false);
 		// Generate cells
@@ -116,10 +235,6 @@ public class Board {
 				}
 				if (y > 0) {
 					String upID = x + ", " + (y - 1);
-					Cell upCell = cells.get(upID);
-					cell.connections.put("up", upCell);
-				} else {
-					String upID = x + ", 7";
 					Cell upCell = cells.get(upID);
 					cell.connections.put("up", upCell);
 				}
@@ -291,5 +406,35 @@ public class Board {
 			});
 		}
 		return teamHasAnyPieces.get();
+	}
+	public void removeCell(Cell c) {
+		this.cells.remove(c.name);
+		// remove connections
+		for (String dir : c.connections.keySet()) {
+			Cell d = c.connections.get(dir);
+			for (String dir2 : d.connections.keySet().stream().toList()) {
+				if (d.connections.get(dir2).equals(c)) {
+					d.connections.remove(dir2);
+				}
+			}
+			for (String dir2 : d.reverseConnections.keySet().stream().toList()) {
+				if (d.reverseConnections.get(dir2).equals(c)) {
+					d.reverseConnections.remove(dir2);
+				}
+			}
+		}
+		for (String dir : c.reverseConnections.keySet()) {
+			Cell d = c.reverseConnections.get(dir);
+			for (String dir2 : d.connections.keySet().stream().toList()) {
+				if (d.connections.get(dir2).equals(c)) {
+					d.connections.remove(dir2);
+				}
+			}
+			for (String dir2 : d.reverseConnections.keySet().stream().toList()) {
+				if (d.reverseConnections.get(dir2).equals(c)) {
+					d.reverseConnections.remove(dir2);
+				}
+			}
+		}
 	}
 }

@@ -1,6 +1,8 @@
 package com.sillypantscoder.chess;
 
 import java.awt.Color;
+import java.util.Collection;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
@@ -16,6 +18,7 @@ import com.sillypantscoder.windowlib.Surface;
 import com.sillypantscoder.windowlib.Window;
 
 public class ChessWindow extends Window {
+	public int boardSize = 8;
 	public Board board;
 	public Spritesheet spritesheet;
 	public Optional<PieceSelection> selectedPiece;
@@ -27,20 +30,20 @@ public class ChessWindow extends Window {
 		this.spritesheet = new Spritesheet("pieces");
 		this.selectedPiece = Optional.empty();
 		this.currentTurn = 0;
-		this.animationTime = 0;
+		this.animationTime = 1;
 	}
 	public void open() {
-		this.open("Chess", 600, 600);
+		this.open("Chess", 70 * boardSize, 70 * boardSize);
 	}
 	public Surface getIcon() {
 		return this.spritesheet.getImage(5, 0);
 	}
 	public Surface frame(int width, int height) {
-		Surface s = new Surface(width, height, new Color(255-64, 255-64, 255-64));
+		Surface s = new Surface(width, height, new Color(255-128, 255-128, 255-128));
 		// draw pieces
-		tileSize = Math.min(width, height) / 8d;
-		for (int x = 0; x < 8; x++) {
-			for (int y = 0; y < 8; y++) {
+		tileSize = Math.min(width, height) / (double)(boardSize);
+		for (int x = 0; x < boardSize; x++) {
+			for (int y = 0; y < boardSize; y++) {
 				Cell c = this.board.cells.get(x + ", " + y);
 				if (c == null) continue;
 				final int drawX = (int)(x * tileSize);
@@ -73,8 +76,8 @@ public class ChessWindow extends Window {
 				});
 			}
 		}
-		for (int x = 0; x < 8; x++) {
-			for (int y = 0; y < 8; y++) {
+		for (int x = 0; x < boardSize; x++) {
+			for (int y = 0; y < boardSize; y++) {
 				Cell c = this.board.cells.get(x + ", " + y);
 				if (c == null) continue;
 				final int drawX = (int)(x * tileSize);
@@ -147,6 +150,7 @@ public class ChessWindow extends Window {
 			if (m != null) {
 				clearHighlights();
 				m.execute();
+				// decayBoard();
 				selectedPiece = Optional.empty();
 				currentTurn += 1;
 				animationTime = 10;
@@ -177,11 +181,18 @@ public class ChessWindow extends Window {
 		Move bestMove = ChessBot.getBestMove(board, team);
 		if (bestMove == null) return;
 		bestMove.execute();
+		// decayBoard();
 	}
 	public void clearHighlights() {
 		for (Cell c : this.board.cells.values()) {
 			c.highlighted = false;
 		}
+	}
+	public void decayBoard() {
+		Collection<Cell> cells = this.board.cells.values();
+		List<Cell> cellsWithNoPieces = cells.stream().filter((v) -> v.piece.isEmpty()).toList();
+		Cell c = cellsWithNoPieces.get((int)(Math.floor(Math.random() * cellsWithNoPieces.size())));
+		board.removeCell(c);
 	}
 	public static class PieceSelection {
 		public Piece piece;

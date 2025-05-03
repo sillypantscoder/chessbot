@@ -41,6 +41,7 @@ public class PawnStandardMoveSet extends MoveSet {
 		for (Direction dir : diagonalMoves) {
 			if (dir.equals(pawn.mainDirection) || dir.equals(pawn.mainDirection.reverseDirection())) continue;
 			Cell diagonal = forwards.go(dir);
+			if (diagonal == null) continue;
 			diagonal.piece.ifPresent((v) -> {
 				if (v.team != movingPiece.team) {
 					moves.add(new PawnDiagonalMove(context, movingPiece, diagonal, v));

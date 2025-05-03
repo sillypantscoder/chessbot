@@ -44,6 +44,7 @@ public class LeapingMoveSet extends MoveSet {
 		Piece movingPiece = context.piece.orElseThrow(() -> new NoSuchElementException("There needs to be a piece at the location defined by `context` (required in order to construct a Move object)"));
 		Set<Move> finalMoves = new HashSet<Move>();
 		for (Cell c : possibleEndingPoints) {
+			if (c == null) continue;
 			c.piece.ifPresentOrElse((v) -> {
 				if (v.team != movingPiece.team) finalMoves.add(new Move.CaptureMove(context, movingPiece, c, v));
 			}, () -> {

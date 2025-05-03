@@ -29,7 +29,7 @@ public class ChessBot {
 		m.execute();
 		double score = getThreatScore(after.board, team) - getThreatScore(before, team);
 		if (m instanceof Move.CaptureMove capture) {
-			score += capture.capturedPiece.getMaterialValue();
+			score += capture.capturedPiece.getMaterialValue() * 1.75;
 		}
 		return score;
 	}
