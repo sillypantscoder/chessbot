@@ -25,8 +25,8 @@ public class ChessWindow extends Window {
 	public double tileSize;
 	public int currentTurn;
 	public int animationTime;
-	public ChessWindow() {
-		this.board = Board.generateStandard2Player8x8();
+	public ChessWindow(Board board) {
+		this.board = board;
 		this.spritesheet = new Spritesheet("pieces");
 		this.selectedPiece = Optional.empty();
 		this.currentTurn = 0;

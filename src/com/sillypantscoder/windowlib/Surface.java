@@ -253,4 +253,19 @@ public class Surface {
 			return null;
 		}
 	}
+	public void invertArea(int x, int y, int width, int height) {
+		// Invert the area
+		Surface area = this.crop(x, y, width, height);
+		for (int i = 0; i < area.img.getWidth(); i++) {
+			for (int j = 0; j < area.img.getHeight(); j++) {
+				Color c = area.get_at(i, j);
+				int r = 255 - c.getRed();
+				int g = 255 - c.getGreen();
+				int b = 255 - c.getBlue();
+				Color newColor = new Color(r, g, b, c.getAlpha());
+				area.set_at(i, j, newColor);
+			}
+		}
+		this.blit(area, x, y);
+	}
 }
