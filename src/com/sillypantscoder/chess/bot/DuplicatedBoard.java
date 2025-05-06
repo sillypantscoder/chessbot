@@ -12,7 +12,7 @@ public class DuplicatedBoard {
 	public Board board;
 	public DuplicatedBoard(Board original) {
 		this.original = original;
-		this.board = new Board();
+		this.board = new Board(original.stdBoardSize);
 		this.board.teams = original.teams;
 		for (Cell c : original.cells.items) {
 			Cell d = new Cell(c.name, c.standardForwardsDirection);

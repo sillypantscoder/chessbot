@@ -18,22 +18,23 @@ import com.sillypantscoder.windowlib.Surface;
 import com.sillypantscoder.windowlib.Window;
 
 public class ChessWindow extends Window {
-	public int boardSize = 8;
 	public Board board;
+	public String name;
 	public Spritesheet spritesheet;
 	public Optional<PieceSelection> selectedPiece;
 	public double tileSize;
 	public int currentTurn;
 	public int animationTime;
-	public ChessWindow(Board board) {
+	public ChessWindow(Board board, String name) {
 		this.board = board;
+		this.name = name;
 		this.spritesheet = new Spritesheet("pieces");
 		this.selectedPiece = Optional.empty();
 		this.currentTurn = 0;
 		this.animationTime = 1;
 	}
 	public void open() {
-		this.open("Chess", 70 * boardSize, 70 * boardSize);
+		this.open("Chess - " + this.name, 70 * this.board.stdBoardSize, 70 * this.board.stdBoardSize);
 	}
 	public Surface getIcon() {
 		return this.spritesheet.getImage(5, 0);
@@ -41,9 +42,9 @@ public class ChessWindow extends Window {
 	public Surface frame(int width, int height) {
 		Surface s = new Surface(width, height, new Color(255-128, 255-128, 255-128));
 		// draw pieces
-		tileSize = Math.min(width, height) / (double)(boardSize);
-		for (int x = 0; x < boardSize; x++) {
-			for (int y = 0; y < boardSize; y++) {
+		tileSize = Math.min(width, height) / (double)(this.board.stdBoardSize);
+		for (int x = 0; x < this.board.stdBoardSize; x++) {
+			for (int y = 0; y < this.board.stdBoardSize; y++) {
 				Cell c = this.board.cells.get(x + ", " + y);
 				if (c == null) continue;
 				final int drawX = (int)(x * tileSize);
@@ -76,8 +77,8 @@ public class ChessWindow extends Window {
 				});
 			}
 		}
-		for (int x = 0; x < boardSize; x++) {
-			for (int y = 0; y < boardSize; y++) {
+		for (int x = 0; x < this.board.stdBoardSize; x++) {
+			for (int y = 0; y < this.board.stdBoardSize; y++) {
 				Cell c = this.board.cells.get(x + ", " + y);
 				if (c == null) continue;
 				final int drawX = (int)(x * tileSize);
@@ -105,18 +106,21 @@ public class ChessWindow extends Window {
 					if (this.board.teams[currentTurn].is_player == false) {
 						Team t = this.board.teams[currentTurn];
 						makeBotMove(t);
-						this.currentTurn += 1;
-						animationTime = 10;
-					}
-					if (currentTurn >= this.board.teams.length) {
-						this.currentTurn = 0;
-						purgeTeamList();
+						this.advanceTurn();
 					}
 				});
 			}
 		}
 		// yay
 		return s;
+	}
+	public void advanceTurn() {
+		this.currentTurn += 1;
+		animationTime = 10;
+		if (currentTurn >= this.board.teams.length) {
+			this.currentTurn = 0;
+			purgeTeamList();
+		}
 	}
 	public void purgeTeamList() {
 		for (int i = 0; i < board.teams.length; i++) {
@@ -150,10 +154,8 @@ public class ChessWindow extends Window {
 			if (m != null) {
 				clearHighlights();
 				m.execute();
-				// decayBoard();
 				selectedPiece = Optional.empty();
-				currentTurn += 1;
-				animationTime = 10;
+				advanceTurn();
 				// don't re-select the piece
 				return;
 			}
@@ -189,6 +191,8 @@ public class ChessWindow extends Window {
 		}
 	}
 	public void decayBoard() {
+		// Remove a random cell from the board.
+		// Add this to the end of advanceTurn() to enable.
 		Collection<Cell> cells = this.board.cells.values();
 		List<Cell> cellsWithNoPieces = cells.stream().filter((v) -> v.piece.isEmpty()).toList();
 		Cell c = cellsWithNoPieces.get((int)(Math.floor(Math.random() * cellsWithNoPieces.size())));
