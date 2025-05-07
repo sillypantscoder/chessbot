@@ -18,4 +18,5 @@ public class Queen extends Piece {
 	public int getMaterialValue() {
 		return 9;
 	}
+	public Queen duplicate() { return new Queen(team); }
 }

@@ -32,4 +32,8 @@ public abstract class Piece {
 		return moves;
 	}
 	public abstract int getMaterialValue();
+	public int getPieceValue() {
+		return getMaterialValue();
+	}
+	public abstract Piece duplicate();
 }

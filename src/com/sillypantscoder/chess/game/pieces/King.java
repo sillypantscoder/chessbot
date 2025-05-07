@@ -1,9 +1,8 @@
 package com.sillypantscoder.chess.game.pieces;
 
-import com.sillypantscoder.chess.game.Piece;
 import com.sillypantscoder.chess.game.Team;
 
-public class King extends Piece {
+public class King extends RoyalPiece {
 	public King(Team team) {
 		super(team);
 		this.moveSets.add(new OrthogonalSlidingMoveSet(1));
@@ -18,4 +17,5 @@ public class King extends Piece {
 	public int getMaterialValue() {
 		return 4;
 	}
+	public King duplicate() { return new King(team); }
 }

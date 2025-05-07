@@ -17,4 +17,5 @@ public class Rook extends Piece {
 	public int getMaterialValue() {
 		return 5;
 	}
+	public Rook duplicate() { return new Rook(team); }
 }

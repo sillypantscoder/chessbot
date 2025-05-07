@@ -67,4 +67,17 @@ public class Board {
 			}
 		}
 	}
+	public boolean isCellAttacked(Cell cell) {
+		AtomicBoolean isAttacked = new AtomicBoolean(false);
+		for (Cell checkCell : this.cells.items) {
+			checkCell.piece.ifPresent((piece) -> {
+				Set<Move> moves = piece.getAllMoves(checkCell);
+				for (Move m : moves) {
+					if (m.targetLoc == cell) isAttacked.set(true);
+				}
+			});
+			if (isAttacked.get()) return true;
+		}
+		return false;
+	}
 }

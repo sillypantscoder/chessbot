@@ -17,4 +17,5 @@ public class Bishop extends Piece {
 	public int getMaterialValue() {
 		return 3;
 	}
+	public Bishop duplicate() { return new Bishop(team); }
 }

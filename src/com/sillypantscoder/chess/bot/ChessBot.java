@@ -11,11 +11,14 @@ import com.sillypantscoder.chess.game.Move.CaptureMove;
 
 public class ChessBot {
 	public static Move getBestMove(Board b, Team team) {
+		return getBestMove(b, team, true);
+	}
+	public static Move getBestMove(Board b, Team team, boolean recursive) {
 		Set<Move> allMoves = b.getAllMoves(team);
 		Move bestMove = null;
 		double bestMoveScore = Integer.MIN_VALUE;
 		for (Move m : allMoves) {
-			double score = getMoveScore(b, team, m);
+			double score = getMoveScore(b, team, m, recursive);
 			if (score > bestMoveScore) {
 				bestMove = m;
 				bestMoveScore = score;
@@ -23,13 +26,23 @@ public class ChessBot {
 		}
 		return bestMove;
 	}
-	public static double getMoveScore(Board before, Team team, Move _m) {
+	public static double getMoveScore(Board before, Team team, Move _m, boolean recursive) {
 		DuplicatedBoard after = new DuplicatedBoard(before);
 		Move m = _m.duplicate(after);
 		m.execute();
 		double score = getThreatScore(after.board, team) - getThreatScore(before, team);
 		if (m instanceof Move.CaptureMove capture) {
-			score += capture.capturedPiece.getMaterialValue() * 1.75;
+			score += capture.capturedPiece.getPieceValue() * 1.5;
+		}
+		if (recursive) {
+			// Find best opponent moves
+			for (Team t : before.teams) {
+				if (t == team) continue;
+				// (This team is an enemy)
+				Move bestOpponentMove = getBestMove(after.board, t, false);
+				double moveScore = getMoveScore(after.board, t, bestOpponentMove, false);
+				score -= moveScore * 0.125;
+			}
 		}
 		return score;
 	}
@@ -43,7 +56,7 @@ public class ChessBot {
 					Set<Move> moves = v.getAllMoves(c);
 					for (Move m : moves) {
 						if (m instanceof CaptureMove capture) {
-							goodValue.addAndGet(capture.capturedPiece.getMaterialValue());
+							goodValue.addAndGet(capture.capturedPiece.getPieceValue());
 						}
 					}
 				} else {
@@ -52,7 +65,7 @@ public class ChessBot {
 					for (Move m : moves) {
 						if (m instanceof CaptureMove capture) {
 							if (capture.capturedPiece.team == team) {
-								badValue.addAndGet(capture.capturedPiece.getMaterialValue());
+								badValue.addAndGet(capture.capturedPiece.getPieceValue());
 							}
 						}
 					}

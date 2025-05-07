@@ -13,6 +13,7 @@ import com.sillypantscoder.chess.game.Cell;
 import com.sillypantscoder.chess.game.Move;
 import com.sillypantscoder.chess.game.Piece;
 import com.sillypantscoder.chess.game.Team;
+import com.sillypantscoder.chess.game.pieces.RoyalPiece;
 import com.sillypantscoder.utils.Utils;
 import com.sillypantscoder.windowlib.Surface;
 import com.sillypantscoder.windowlib.Window;
@@ -54,6 +55,7 @@ public class ChessWindow extends Window {
 				Color tileColor = new Color(255-32, 255-32, 255-32);
 				if ((x + y) % 2 == 0) tileColor = Color.WHITE;
 				if (c.highlighted) tileColor = Color.YELLOW;
+				if (c.piece.map((v) -> v instanceof RoyalPiece).orElse(false) && board.isCellAttacked(c)) tileColor = new Color(255, 128, 128);
 				s.drawRect(tileColor, drawX, drawY, intTileSize, intTileSize);
 				// selected piece?
 				selectedPiece.ifPresent((p) -> {

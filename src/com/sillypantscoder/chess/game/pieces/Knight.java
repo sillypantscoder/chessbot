@@ -17,4 +17,5 @@ public class Knight extends Piece {
 	public int getMaterialValue() {
 		return 3;
 	}
+	public Knight duplicate() { return new Knight(team); }
 }

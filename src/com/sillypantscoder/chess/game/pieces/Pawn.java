@@ -22,4 +22,9 @@ public class Pawn extends Piece {
 	public int getMaterialValue() {
 		return 1;
 	}
+	public Pawn duplicate() {
+		Pawn p = new Pawn(this.mainDirection, team);
+		p.moved = this.moved;
+		return p;
+	}
 }

@@ -18,7 +18,7 @@ public class DuplicatedBoard {
 			Cell d = new Cell(c.name, c.standardForwardsDirection);
 			board.cells.put(d);
 			c.piece.ifPresent((v) -> {
-				d.piece = Optional.of(v);
+				d.piece = Optional.of(v.duplicate());
 			});
 		}
 		// Update connections
