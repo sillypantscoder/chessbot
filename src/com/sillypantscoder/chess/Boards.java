@@ -57,34 +57,9 @@ public class Boards {
 		}
 		return cells;
 	}
-	public static Board generateStandardPlayerPlayer8x8() {
-		Team whiteTeam = new Team("White", 0, true);
-		Team blackTeam = new Team("Black", 1, true);
-		// Generate cells
-		SelfAwareMap<Cell> cells = generateGrid(8, 8, (c, x, y) -> {
-			// Pieces
-			Team team = y < 4 ? blackTeam : whiteTeam;
-			if (y == 1 || y == 6) c.piece = Optional.of(new Pawn(c.standardForwardsDirection, team));
-			if (y == 0 || y == 7) {
-				Piece p = new Rook(team);
-				if (x == 1) p = new Knight(team);
-				if (x == 2) p = new Bishop(team);
-				if (x == 3) p = new Queen(team);
-				if (x == 4) p = new King(team);
-				if (x == 5) p = new Bishop(team);
-				if (x == 6) p = new Knight(team);
-				c.piece = Optional.of(p);
-			}
-		});
-		// Finish
-		Board b = new Board(8);
-		b.teams = new Team[] { whiteTeam, blackTeam };
-		b.cells.putAll(cells);
-		return b;
-	}
-	public static Board generateStandardPlayerBot8x8() {
-		Team whiteTeam = new Team("White", 0, true);
-		Team blackTeam = new Team("Black", 1, false);
+	public static Board generateStandard8x8() {
+		Team whiteTeam = new Team("White", 0);
+		Team blackTeam = new Team("Black", 1);
 		// Generate cells
 		SelfAwareMap<Cell> cells = generateGrid(8, 8, (c, x, y) -> {
 			// Pieces
@@ -108,8 +83,8 @@ public class Boards {
 		return b;
 	}
 	public static Board generateDoubleSized() {
-		Team whiteTeam = new Team("White", 0, true);
-		Team blackTeam = new Team("Black", 1, false);
+		Team whiteTeam = new Team("White", 0);
+		Team blackTeam = new Team("Black", 1);
 		// Generate cells
 		SelfAwareMap<Cell> cells = generateGrid(16, 16, (c, x, y) -> {
 			// Pieces
@@ -133,9 +108,9 @@ public class Boards {
 		b.cells.putAll(cells);
 		return b;
 	}
-	public static Board generateLooping2Player8x8() {
-		Team whiteTeam = new Team("White", 0, true);
-		Team blackTeam = new Team("Black", 1, false);
+	public static Board generateLooping8x8() {
+		Team whiteTeam = new Team("White", 0);
+		Team blackTeam = new Team("Black", 1);
 		// Generate cells
 		SelfAwareMap<Cell> cells = generateGrid(8, 8, (c, x, y) -> {
 			// Pieces
@@ -183,9 +158,9 @@ public class Boards {
 		b.cells.putAll(cells);
 		return b;
 	}
-	public static Board generateHorizontallyLooping2Player8x8() {
-		Team whiteTeam = new Team("White", 0, true);
-		Team blackTeam = new Team("Black", 1, false);
+	public static Board generateHorizontallyLooping8x8() {
+		Team whiteTeam = new Team("White", 0);
+		Team blackTeam = new Team("Black", 1);
 		// Generate cells
 		SelfAwareMap<Cell> cells = generateGrid(8, 8, (c, x, y) -> {
 			// Pieces

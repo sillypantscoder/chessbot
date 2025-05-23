@@ -15,11 +15,10 @@ public class SelectionWindow extends Window {
 	public int mouseY = 0;
 	public SelectionWindow() {
 		generators = new ArrayList<BoardGenerator>();
-		generators.add(new BoardGenerator("Standard 8x8 (player vs bot)", Boards::generateStandardPlayerBot8x8));
-		generators.add(new BoardGenerator("Standard 8x8 (player vs player)", Boards::generateStandardPlayerPlayer8x8));
-		generators.add(new BoardGenerator("Double-sized 16x16 (player vs bot)", Boards::generateDoubleSized));
-		generators.add(new BoardGenerator("Horizontally looping (cylindrical) 8x8 (player vs bot)", Boards::generateHorizontallyLooping2Player8x8));
-		generators.add(new BoardGenerator("Completely looping (toroidal) 8x8 (player vs bot)", Boards::generateLooping2Player8x8));
+		generators.add(new BoardGenerator("Standard 8x8", Boards::generateStandard8x8));
+		generators.add(new BoardGenerator("Double-sized 16x16", Boards::generateDoubleSized));
+		generators.add(new BoardGenerator("Horizontally looping (cylindrical) 8x8", Boards::generateHorizontallyLooping8x8));
+		generators.add(new BoardGenerator("Completely looping (toroidal) 8x8", Boards::generateLooping8x8));
 	}
 	public void open() {
 		this.open("Chess - Board Select", 700, 400);
@@ -78,7 +77,7 @@ public class SelectionWindow extends Window {
 	}
 	public void mouseWheel(int amount) {}
 	public void navigate(BoardGenerator gen) {
-		ChessWindow win = new ChessWindow(gen.generator().get(), gen.name());
+		GameSetupWindow win = new GameSetupWindow(gen.generator().get(), gen.name());
 		win.open();
 	}
 }

@@ -7,7 +7,6 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
 
-import com.sillypantscoder.chess.bot.ChessBot;
 import com.sillypantscoder.chess.game.Board;
 import com.sillypantscoder.chess.game.Cell;
 import com.sillypantscoder.chess.game.Move;
@@ -105,7 +104,8 @@ public class ChessWindow extends Window {
 						selectedPiece = Optional.empty();
 					}
 				}, () -> {
-					if (this.board.teams[currentTurn].is_player == false) {
+					if (this.board.teams[currentTurn].inputMode instanceof Team.ThisPlayerMode) {
+					} else {
 						Team t = this.board.teams[currentTurn];
 						makeBotMove(t);
 						this.advanceTurn();
@@ -171,7 +171,7 @@ public class ChessWindow extends Window {
 		Piece p = c.piece.orElse(null);
 		if (p == null) { selectedPiece = Optional.empty(); return; }
 		// Select the piece (if it is ours)
-		if (p.team == this.board.teams[this.currentTurn] && p.team.is_player) {
+		if (p.team == this.board.teams[this.currentTurn] && p.team.inputMode instanceof Team.ThisPlayerMode) {
 			selectedPiece = Optional.of(new PieceSelection(c));
 			animationTime = 10;
 		}
@@ -181,11 +181,11 @@ public class ChessWindow extends Window {
 	public void mouseWheel(int amount) {
 	}
 	public void makeBotMove(Team team) {
-		clearHighlights();
-		Move bestMove = ChessBot.getBestMove(board, team);
-		if (bestMove == null) return;
-		bestMove.execute();
-		// decayBoard();
+		Optional<Move> bestMove = team.inputMode.getMove(board);
+		bestMove.ifPresent((v) -> {
+			clearHighlights();
+			v.execute();
+		});
 	}
 	public void clearHighlights() {
 		for (Cell c : this.board.cells.values()) {
